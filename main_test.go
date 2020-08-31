@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -67,3 +68,20 @@ CREATE TABLE IF NOT EXISTS users
 		 t.Errorf("Expected response code %d. Got %d\n", expected, actual)
 	 }
  }
+
+ // userが存在しない時のテスト
+ func TestGenNonExistentUser(t *testing.T) {
+	 clearTable()
+
+	 req, _ := http.NewRequest("GET", "/users/45", nil)
+	 response := executeRequest(req)
+
+	 checkResponseCode(t, http.StatusNotFound, response.Code)
+
+	 var m map[string]string
+	 json.Unmarshal(response.Body.Bytes(), &m)
+	 if m["error"] != "User not found" {
+		 t.Errorf("Expected the 'error' key of the response to be set to 'User not found'. Got '%s'", m["error"])
+	 } 
+ }
+ 
