@@ -15,7 +15,7 @@ type App struct {
 }
 
 func (a *App) Initialize(user, password, dbname string) {
-	connectionString := fmt.Sprintf("%s:$s@/%s", user, password, dbname)
+	connectionString := fmt.Sprintf("%s:%s@/%s", user, password, dbname)
 	
 	// DBとの接続
 	var err error
