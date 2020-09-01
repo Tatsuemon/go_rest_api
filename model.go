@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"errors"
 	"fmt"
 )
 
@@ -24,6 +23,12 @@ func (u *user) updateUser(db *sql.DB) error {
 }
 
 func (u *user) deleteUser(db *sql.DB) error {
+	statement := fmt.Sprintf("DELETE FROM users WHERE id=%d", u.ID)
+	_, err := db.Exec(statement)
+	return err
+}
+
+func (u *user) createUser(db *sql.DB) error {
 	statement := fmt.Sprintf("INSERT INTO users(name, age) VALUES('%s', %d)", u.Name, u.Age)
 	_, err := db.Exec(statement)
 
