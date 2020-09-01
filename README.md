@@ -5,3 +5,7 @@ https://github.com/kelvins/GoApiTutorial
 ```
 $ go test -v
 ```
+## 起動
+```
+$ go run .
+```
