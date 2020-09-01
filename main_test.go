@@ -36,6 +36,7 @@ func clearTable() {
 	a.DB.Exec("DELETE FROM users")
 	a.DB.Exec("ALTER TABLE users AUTO_INCREMENT = 1")
 }
+
 const tableCreationQuery = `
 CREATE TABLE IF NOT EXISTS users
 (
@@ -76,7 +77,7 @@ func checkResponseCode(t *testing.T, expected, actual int) {
 func TestGenNonExistentUser(t *testing.T) {
 	clearTable()
 
-	req, _ := http.NewRequest("GET", "/users/45", nil)
+	req, _ := http.NewRequest("GET", "/user/45", nil)
 	response := executeRequest(req)
 
 	checkResponseCode(t, http.StatusNotFound, response.Code)
@@ -85,7 +86,7 @@ func TestGenNonExistentUser(t *testing.T) {
 	json.Unmarshal(response.Body.Bytes(), &m)
 	if m["error"] != "User not found" {
 		t.Errorf("Expected the 'error' key of the response to be set to 'User not found'. Got '%s'", m["error"])
-	} 
+	}
 }
 
 func TestCreateUser(t *testing.T) {
@@ -98,14 +99,14 @@ func TestCreateUser(t *testing.T) {
 	checkResponseCode(t, http.StatusCreated, response.Code)
 
 	var m map[string]interface{}
-	json.Unmarshal(response.Body.Bytes(), &m) 
+	json.Unmarshal(response.Body.Bytes(), &m)
 
-	if m["name"] != "test user"{
+	if m["name"] != "test user" {
 		t.Errorf("Expected user name to be 'test user'. Got '%v'", m["name"])
 	}
 
 	if m["age"] != 30.0 {
-		t.Errorf("Expected user age to be '30'. Got '%v'", m["age"]) 
+		t.Errorf("Expected user age to be '30'. Got '%v'", m["age"])
 	}
 
 	// id はfloat, jsonをunmarshalでは数字をfloatで扱う
@@ -127,12 +128,12 @@ func TestGetUser(t *testing.T) {
 }
 
 func addUsers(count int) {
-	if count < 1{
-		count =	1
+	if count < 1 {
+		count = 1
 	}
 
-	for i:=0; i<count; i++{
-		statement := fmt.Sprintf("INSERT INTO users(name, age) VALUES('%s', %d)", ("User " + strconv.Itoa(i+1)), ((i+1) * 10))
+	for i := 0; i < count; i++ {
+		statement := fmt.Sprintf("INSERT INTO users(name, age) VALUES('%s', %d)", ("User " + strconv.Itoa(i+1)), ((i + 1) * 10))
 		a.DB.Exec(statement)
 	}
 }
@@ -181,7 +182,7 @@ func TestDeleteUser(t *testing.T) {
 	response = executeRequest(req)
 
 	checkResponseCode(t, http.StatusOK, response.Code)
-	
+
 	req, _ = http.NewRequest("GET", "/user/1", nil)
 	response = executeRequest(req)
 	checkResponseCode(t, http.StatusNotFound, response.Code)

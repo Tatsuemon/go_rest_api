@@ -6,9 +6,9 @@ import (
 )
 
 type user struct {
-	ID int `json:"id"`
+	ID   int    `json:"id"`
 	Name string `json:"name"`
-	Age int `json:"age"`
+	Age  int    `json:"age"`
 }
 
 func (u *user) getUser(db *sql.DB) error {
@@ -17,7 +17,7 @@ func (u *user) getUser(db *sql.DB) error {
 }
 
 func (u *user) updateUser(db *sql.DB) error {
-	statement := fmt.Sprintf("UPDATE users SET name, age FROM users WHERE id=%d", u.ID)
+	statement := fmt.Sprintf("UPDATE users SET name='%s', age=%d WHERE id=%d", u.Name, u.Age, u.ID)
 	_, err := db.Exec(statement)
 	return err
 }
@@ -56,7 +56,7 @@ func getUsers(db *sql.DB, start, count int) ([]user, error) {
 	defer rows.Close()
 
 	users := []user{}
-	
+
 	for rows.Next() {
 		var u user
 		if err := rows.Scan(&u.ID, &u.Name, &u.Age); err != nil {
