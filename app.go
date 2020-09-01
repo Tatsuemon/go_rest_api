@@ -1,4 +1,4 @@
-package main
+package app 
 
 import (
 	"database/sql"
@@ -10,6 +10,8 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
+
+	"github.com/Tatsuemon/go_rest_api/model"
 )
 
 type App struct {
