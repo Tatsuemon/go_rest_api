@@ -1,4 +1,4 @@
-package main 
+package app
 
 import (
 	"database/sql"
@@ -10,6 +10,7 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
+	"github.com/tarao1006/go_rest_api/model"
 )
 
 type App struct {
@@ -51,8 +52,8 @@ func (a *App) getUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	u := user{ID: id}
-	if err := u.getUser(a.DB); err != nil {
+	u := model.User{ID: id}
+	if err := u.GetUser(a.DB); err != nil {
 		switch err {
 		case sql.ErrNoRows:
 			respondWithError(w, http.StatusNotFound, "User not found")
@@ -89,7 +90,7 @@ func (a *App) getUsers(w http.ResponseWriter, r *http.Request) {
 		start = 0
 	}
 
-	users, err := getUsers(a.DB, start, count)
+	users, err := model.GetUsers(a.DB, start, count)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 	}
@@ -98,7 +99,7 @@ func (a *App) getUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *App) createUser(w http.ResponseWriter, r *http.Request) {
-	var u user
+	var u model.User
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&u); err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
@@ -106,7 +107,7 @@ func (a *App) createUser(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	if err := u.createUser(a.DB); err != nil {
+	if err := u.CreateUser(a.DB); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -122,7 +123,7 @@ func (a *App) updateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var u user
+	var u model.User
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&u); err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
@@ -131,7 +132,7 @@ func (a *App) updateUser(w http.ResponseWriter, r *http.Request) {
 
 	defer r.Body.Close()
 	u.ID = id
-	if err := u.updateUser(a.DB); err != nil {
+	if err := u.UpdateUser(a.DB); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -147,8 +148,8 @@ func (a *App) deleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	u := user{ID: id}
-	if err := u.deleteUser(a.DB); err != nil {
+	u := model.User{ID: id}
+	if err := u.DeleteUser(a.DB); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
